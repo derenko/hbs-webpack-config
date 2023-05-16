@@ -1,7 +1,12 @@
+## Webpack - Handlebars template
 
-# Webpack template for hbs development:
+- built in `handlebars (.hbs)` templating
+- `scss` support
+- `dev-server` configuration
+- support for multiple `html` files
+- built in `js/css/images` optimizations
 
-Commands:
+### Commands:
 ---
 Install: 
 ```
