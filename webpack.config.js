@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require("fs");
+const locations = require("./configuration/locations");
 
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -14,35 +15,39 @@ module.exports = (env) => {
 
   return {
     mode: env.MODE,
+    devtool: 'source-map',
     entry: ['./src/index.js', './src/index.scss'],
     output: {
       path: path.resolve(__dirname, 'dist'),
-      filename: 'bundle.[hash].js',
+      filename: 'index.[fullhash].js',
       clean: true,
     },
+    stats: 'minimal',
     devServer: {
       static: {
-        directory: path.join(__dirname, './src/public'),
+        directory: locations.ASSETS,
       },
       compress: isProduction,
       port: 8080,
       hot: true,
-      watchFiles:['src/**/*']
+      watchFiles:['src/**/*'],
+      open: true,
     },
     plugins: [
-      new webpack.HotModuleReplacementPlugin(),
-      new HtmlWebpackPlugin({
-        template: "./src/index.hbs",
+      ...locations.PAGES.map(page => new HtmlWebpackPlugin({
+        template: page.path,
+        filename: page.name,
         inject: "body"
-      }), 
-      new MiniCssExtractPlugin({
-        filename: isProduction ? '[name].[hash].css' : '[name].css'
-      }),
+      })),
       new CopyWebpackPlugin({
         patterns: [
-          { from: "public/fonts", to: "fonts" },
-          { from: "public/images", to: "images" }
+          { from: locations.FONTS, to: "fonts" },
+          { from: locations.IMAGES, to: "images" },
+          { from: locations.FILES, to: "files" }
         ]
+      }),
+      new MiniCssExtractPlugin({
+        filename: isProduction ? '[name].[fullhash].css' : '[name].css'
       }),
     ],
     module: {
@@ -60,7 +65,7 @@ module.exports = (env) => {
           test: /\.hbs$/, 
           loader: "handlebars-loader",
           options: {
-            runtime: path.resolve(__dirname, 'hbs-helpers/index.js'),
+            runtime: locations.CONFIGURATION_HBS,
             precompileOptions: {
               knownHelpersOnly: false,
             }
@@ -76,9 +81,7 @@ module.exports = (env) => {
         new ImageMinimizerPlugin({
           minimizer: {
             implementation: ImageMinimizerPlugin.squooshMinify,
-            options: {
-              // Your options for `squoosh`
-            },
+            options: {},
           },
         }),
       ],
