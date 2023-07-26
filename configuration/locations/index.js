@@ -1,28 +1,30 @@
 const fs = require("fs");
 const path = require("path");
 
-const ROOT = '.';
+const ROOT = ".";
 
-const CONFIGURATION = path.resolve(ROOT, 'configuration');
+const CONFIGURATION = path.resolve(ROOT, "configuration");
 
 const CONFIGURATION_HBS = path.resolve(CONFIGURATION, "hbs", "index.js");
 
-const PAGES = fs.readdirSync(path.join(ROOT, 'src/pages'))
-  .map(name => ({
-    path: path.resolve(ROOT, 'src', 'pages', name),
-    name: name.replace('hbs', 'html')
-  }));
+const PAGES = fs.readdirSync(path.join(ROOT, "src/pages")).map((name) => ({
+  path: path.resolve(ROOT, "src", "pages", name),
+  name: name.replace("hbs", "html"),
+}));
 
-const PARTIALS = fs.readdirSync(path.join(ROOT, 'src/partials'))
-  .map(name => path.resolve(ROOT, 'src', 'partials', name));
+const PARTIALS = fs
+  .readdirSync(path.join(ROOT, "src/partials"))
+  .map((name) => path.resolve(ROOT, "src", "partials", name));
 
-const ASSETS = path.resolve(ROOT, 'src', 'assets');
+const ASSETS = path.resolve(ROOT, "src", "assets");
 
-const FONTS = path.resolve(ASSETS, 'fonts');
+const SERVER = path.resolve(ROOT, "src", "server");
 
-const IMAGES = path.resolve(ASSETS, 'images');
+const FONTS = path.resolve(ASSETS, "fonts");
 
-const FILES = path.resolve(ASSETS, 'files');
+const IMAGES = path.resolve(ASSETS, "images");
+
+const FILES = path.resolve(ASSETS, "files");
 
 module.exports = {
   CONFIGURATION,
@@ -32,5 +34,6 @@ module.exports = {
   ASSETS,
   FONTS,
   IMAGES,
-  FILES
-}
+  FILES,
+  SERVER,
+};

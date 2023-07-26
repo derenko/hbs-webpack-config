@@ -1,9 +1,9 @@
-const path = require('path');
+const path = require("path");
 const fs = require("fs");
 const locations = require("./configuration/locations");
 
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require("webpack");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
@@ -15,14 +15,15 @@ module.exports = (env) => {
 
   return {
     mode: env.MODE,
-    devtool: 'source-map',
-    entry: ['./src/index.js', './src/index.scss'],
+    devtool: "source-map",
+    entry: {
+      index: "./src/index.js",
+    },
     output: {
-      path: path.resolve(__dirname, 'dist'),
-      filename: 'index.[fullhash].js',
+      path: path.resolve(__dirname, "dist"),
       clean: true,
     },
-    stats: 'minimal',
+    stats: "minimal",
     devServer: {
       static: {
         directory: locations.ASSETS,
@@ -30,47 +31,48 @@ module.exports = (env) => {
       compress: isProduction,
       port: 8080,
       hot: true,
-      watchFiles:['src/**/*'],
+      watchFiles: ["src/**/*"],
       open: true,
+      host: "local-ip",
     },
     plugins: [
-      ...locations.PAGES.map(page => new HtmlWebpackPlugin({
-        template: page.path,
-        filename: page.name,
-        inject: "body"
-      })),
+      ...locations.PAGES.map(
+        (page) =>
+          new HtmlWebpackPlugin({
+            template: page.path,
+            filename: page.name,
+            inject: "body",
+          })
+      ),
       new CopyWebpackPlugin({
         patterns: [
           { from: locations.FONTS, to: "fonts" },
           { from: locations.IMAGES, to: "images" },
-          { from: locations.FILES, to: "files" }
-        ]
+          { from: locations.FILES, to: "files" },
+          { from: locations.SERVER, to: "server" },
+        ],
       }),
       new MiniCssExtractPlugin({
-        filename: isProduction ? '[name].[fullhash].css' : '[name].css'
+        filename: "./css/[name].css",
       }),
     ],
     module: {
       rules: [
         {
-          test: /\.scss$/,
-          exclude: path.resolve(__dirname, 'node_modules'),
-          use: [
-            MiniCssExtractPlugin.loader,
-            "css-loader",
-            "sass-loader",
-          ],
+          test: /\.(scss|css)$/,
+          exclude: path.resolve(__dirname, "node_modules"),
+          use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
         },
-        { 
-          test: /\.hbs$/, 
+        {
+          test: /\.hbs$/,
           loader: "handlebars-loader",
           options: {
             runtime: locations.CONFIGURATION_HBS,
             precompileOptions: {
               knownHelpersOnly: false,
-            }
+            },
           },
-        }
+        },
       ],
     },
     optimization: {
@@ -85,6 +87,6 @@ module.exports = (env) => {
           },
         }),
       ],
-    }
-  }
+    },
+  };
 };

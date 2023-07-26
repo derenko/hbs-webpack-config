@@ -1,1 +1,3 @@
-import './js/carousel';
+import "./index.scss";
+
+import "./js/carousel";
